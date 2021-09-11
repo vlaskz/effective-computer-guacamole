@@ -1,4 +1,4 @@
-package HelloWorld
+package main
 
 import (
 	"fmt"
@@ -17,4 +17,6 @@ func main() {
 
 func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World\n")
+	log.Printf("Server has served the helloWorld Service!")
+
 }
