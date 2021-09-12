@@ -22,7 +22,9 @@ func main() {
 }
 
 func server() {
+
 	http.HandleFunc("/hw", hwHandler)
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
 
 	log.Printf("Server started at %v\n", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
