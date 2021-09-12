@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/thedevsaddam/renderer"
 )
 
 var port = 8080
@@ -24,27 +25,34 @@ type helloWorldRequest struct {
 
 func main() {
 
-	http.HandleFunc("/helloworld", helloWorldHandler)
+	rnd := renderer.New()
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		res := helloWorldResponse{Message: "Hello World", Id: i}
+		rnd.JSON(w, http.StatusOK, res)
+		i++
+	})
+
+	mux.HandleFunc("/helloworld", helloWorldHandler)
 
 	log.Printf("Server Starting on port %v", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), mux))
 
 }
 
 func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
-	body, err := ioutil.ReadAll(r.Body)
+	var request helloWorldRequest
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	var request helloWorldRequest
-	err = json.Unmarshal(body, &request)
-	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
 	response := helloWorldResponse{Message: "You saluted the world, " + request.Name, Id: i}
 	encoder := json.NewEncoder(w)
 	encoder.Encode(&response)
