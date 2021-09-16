@@ -19,6 +19,6 @@ WORKDIR /dist
 
 RUN cp /build/main .
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["/dist/main"]
