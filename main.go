@@ -1,13 +1,25 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+const PORT = 8080
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run(":80")
+	SimpleWebServer()
+}
+
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Pong!")
+}
+
+func SimpleWebServer() {
+	http.HandleFunc("/ping", PingHandler)
+
+	var message string = fmt.Sprintf("Server running on port %v", PORT)
+	log.Print(message)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", PORT), nil))
 }
